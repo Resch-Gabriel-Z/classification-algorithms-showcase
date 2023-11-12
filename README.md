@@ -15,7 +15,7 @@ Welcome to the Classification Algorithms Showcase project! This repository serve
 The goal of this project is to showcase the implementation of various classification algorithms. I previously attempted this project with a more messy and inexperienced approach. Now armed with new knowledge and skills, I am revisiting this project to provide a cleaner and more organized implementation of different classification algorithms.
 
 
-Feel free to explore the implemented algorithms, use them in your projects, etc...
+Feel free to explore the implemented algorithms, use them in your projects, etc.
 ## Implemented Algorithms
 
 ### Support Vector Machine (SVM)
