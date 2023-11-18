@@ -2,9 +2,20 @@ import numpy as np
 
 
 class SVM:
+    """ Support Vector Machine classifier.
+    """
     def __init__(
         self, C=1.0, learning_rate=0.01, max_iters=1000, tol=1e-4, lambda_param=0.01
     ):
+        """ SVM classifier.
+
+        Args:
+            C (float, optional): C parameter. Defaults to 1.0.
+            learning_rate (float, optional): learning rate. Defaults to 0.01.
+            max_iters (int, optional): maximum number of iterations. Defaults to 1000.
+            tol (_type_, optional): tolerance. Defaults to 1e-4.
+            lambda_param (float, optional): lambda parameter. Defaults to 0.01.
+        """
         self.C = C
         self.learning_rate = learning_rate
         self.max_iters = max_iters
@@ -15,6 +26,15 @@ class SVM:
         self.bias = None
 
     def compute_gradient_svm(self, X, y):
+        """Compute gradient for SVM.
+
+        Args:
+            X (array): data
+            y (array): labels
+
+        Returns:
+            loss_weight, loss_bias: gradient for weights and bias
+        """
         loss_weight_c = 0
         loss_bias_c = 0
         for idx, x_i in enumerate(X):
@@ -30,6 +50,12 @@ class SVM:
         return loss_weight, loss_bias
 
     def fit(self, X, y):
+        """Fit SVM classifier.
+
+        Args:
+            X (array): data
+            y (array): labels
+        """
         n_samples, n_features = X.shape
 
         # Data preprocessing
@@ -47,4 +73,12 @@ class SVM:
             self.bias -= self.learning_rate * loss_bias
 
     def predict(self, X):
+        """Predict labels.
+
+        Args:
+            X (array): data to predict
+
+        Returns:
+            array: predicted labels
+        """
         return np.sign(np.dot(X, self.weights) + self.bias)
