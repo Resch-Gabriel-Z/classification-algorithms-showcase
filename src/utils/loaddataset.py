@@ -1,33 +1,50 @@
-from sklearn.datasets import load_iris, load_digits, make_classification, make_blobs
+from sklearn.datasets import (
+    load_iris,
+    load_digits,
+    make_classification,
+    make_blobs,
+    make_moons,
+    make_circles,
+)
 from sklearn.model_selection import train_test_split
 
 
-def load_iris_dataset():
+def load_iris_dataset(test_size=0.2, random_state=42):
     iris = load_iris()
     X, y = iris.data, iris.target
-    return train_test_split(X, y, test_size=0.2, random_state=42)
+    return train_test_split(X, y, test_size=test_size, random_state=random_state)
 
 
-def load_digits_dataset():
+def load_digits_dataset(test_size=0.2, random_state=42):
     digits = load_digits()
     X, y = digits.data, digits.target
-    return train_test_split(X, y, test_size=0.2, random_state=42)
+    return train_test_split(X, y, test_size=test_size, random_state=random_state)
 
 
-def load_synthetic_classification_dataset():
+def load_synthetic_classification_dataset(test_size=0.2, random_state=42):
     X, y = make_classification(
         n_samples=1000,
         n_features=20,
         n_informative=10,
         n_clusters_per_class=2,
-        random_state=42,
+        random_state=random_state,
     )
-    return train_test_split(X, y, test_size=0.2, random_state=42)
+    return train_test_split(X, y, test_size=test_size, random_state=random_state)
 
 
-def load_synthetic_blobs_dataset():
-    X, y = make_blobs(n_samples=1000, centers=2, random_state=42)
-    return train_test_split(X, y, test_size=0.2, random_state=42)
+def load_synthetic_blobs_dataset(test_size=0.2, random_state=42):
+    X, y = make_blobs(n_samples=1000, centers=2, random_state=random_state)
+    return train_test_split(X, y, test_size=test_size, random_state=random_state)
+
+
+def load_synthetic_moons_dataset(test_size=0.2, random_state=42):
+    X, y = make_moons(n_samples=1000, noise=0.1, random_state=random_state)
+    return train_test_split(X, y, test_size=test_size, random_state=random_state)
+
+
+def load_synthetic_circles_dataset(test_size=0.2, random_state=42):
+    X, y = make_circles(n_samples=1000, noise=0.1, random_state=random_state)
+    return train_test_split(X, y, test_size=test_size, random_state=random_state)
 
 
 if __name__ == "__main__":
