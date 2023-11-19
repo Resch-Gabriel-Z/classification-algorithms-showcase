@@ -1,0 +1,109 @@
+/* FILEPATH: /home/gabe/VScodeMisc/Classification/src/style.css */
+
+/* Reset default styles */
+body {
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
+  background-color: #ffffff;
+  /* Set background color to white */
+  color: #000000;
+  /* Set text color to black */
+}
+
+/* Header styles */
+h1 {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 16px;
+}
+
+/* Button styles */
+button {
+  padding: 8px 16px;
+  background-color: #ffffff;
+  /* Set button background color to white */
+  color: #000000;
+  /* Set button text color to black */
+  border: 1px solid #000000;
+  /* Add a black border to the button */
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #f0f0f0;
+  /* Change button background color on hover */
+}
+
+/* Input styles */
+input[type="text"],
+input[type="number"] {
+  padding: 8px;
+  border: 1px solid #000000;
+  /* Add a black border to the input fields */
+  border-radius: 4px;
+}
+
+/* Table styles */
+table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+th,
+td {
+  padding: 8px;
+  border: 1px solid #000000;
+  /* Add a black border to the table cells */
+}
+
+th {
+  font-weight: bold;
+  background-color: #f0f0f0;
+  /* Set table header background color */
+}
+
+/* Footer styles */
+footer {
+  font-size: 14px;
+  font-style: italic;
+  text-align: center;
+  margin-top: 16px;
+}
+
+.Title {
+  font-size: 32px;
+  font-weight: bold;
+  margin-bottom: 16px;
+  text-align: center;
+}
+
+.sidebarTitle {
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 16px;
+  text-align: left;
+}
+
+.sidebarTitle p {
+  font-size: 2pc;
+  font-weight: bold;
+  margin-bottom: 16px;
+  text-align: left;
+}
+
+.modelTitle {
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 16px;
+  text-align: center;
+}
+
+.svmdescription {
+  font-size: 16px;
+  margin-bottom: 16px;
+  text-align: left;
+}
+
+/* End of file */

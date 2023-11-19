@@ -5,3 +5,21 @@ param_grid_linear_svm = {
     "tol": [1e-4, 1e-3, 1e-2],
     "lambda_param": [0.001, 0.01, 0.1, 1, 10, 100],
 }
+
+param_grid_KNN = {"n_neighbors": [1, 3, 5, 7, 9]}
+
+param_grid_decision_tree = {
+    "criterion": ["gini", "entropy"],
+    "splitter": ["best", "random"],
+    "max_depth": [1, 2, 3, 4, 5],
+    "min_samples_split": [2, 3, 4, 5],
+    "min_samples_leaf": [1, 2, 3, 4, 5],
+}
+
+param_grid_random_forest = {
+    "n_estimators": [100, 200, 300],
+    "criterion": ["gini", "entropy"],
+    "max_depth": [1, 2, 3, 4, 5],
+    "min_samples_split": [2, 3, 4, 5],
+    "min_samples_leaf": [1, 2, 3, 4, 5],
+}

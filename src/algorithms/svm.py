@@ -1,22 +1,20 @@
 import numpy as np
+from sklearn.base import BaseEstimator, ClassifierMixin
 
 
-class SVM:
-    """ Support Vector Machine classifier.
-    """
-    def __init__(
-        self, C=1.0, learning_rate=0.01, max_iters=1000, tol=1e-4, lambda_param=0.01
-    ):
-        """ SVM classifier.
+# Add BaseEstimator and ClassifierMixin to your class for compatibility with sklearn #
+class SVM(BaseEstimator, ClassifierMixin):
+    """Support Vector Machine classifier."""
+
+    def __init__(self, learning_rate=0.01, max_iters=1000, tol=1e-4, lambda_param=0.01):
+        """SVM classifier.
 
         Args:
-            C (float, optional): C parameter. Defaults to 1.0.
             learning_rate (float, optional): learning rate. Defaults to 0.01.
             max_iters (int, optional): maximum number of iterations. Defaults to 1000.
             tol (_type_, optional): tolerance. Defaults to 1e-4.
             lambda_param (float, optional): lambda parameter. Defaults to 0.01.
         """
-        self.C = C
         self.learning_rate = learning_rate
         self.max_iters = max_iters
         self.tol = tol
@@ -35,18 +33,15 @@ class SVM:
         Returns:
             loss_weight, loss_bias: gradient for weights and bias
         """
-        loss_weight_c = 0
-        loss_bias_c = 0
-        for idx, x_i in enumerate(X):
-            if (y[idx] * (np.dot(x_i, self.weights) + self.bias)) >= 1:
-                loss_weight_c += 0
-                loss_bias_c += 0
-            else:
-                loss_weight_c += self.C * (y[idx] * x_i)
-                loss_bias_c += self.C * y[idx]
+        n_samples, n_features = X.shape
+        loss_weight = np.zeros(n_features)
+        loss_bias = 0
 
-        loss_weight = self.weights - loss_weight_c
-        loss_bias = -loss_bias_c
+        for i in range(n_samples):
+            if y[i] * (np.dot(X[i], self.weights) + self.bias) < 1:
+                loss_weight += -y[i] * X[i]
+                loss_bias -= y[i]
+
         return loss_weight, loss_bias
 
     def fit(self, X, y):
@@ -56,21 +51,35 @@ class SVM:
             X (array): data
             y (array): labels
         """
-        n_samples, n_features = X.shape
+
+        n_features = X.shape[1]
+        loss_weight_dif = float("inf")
 
         # Data preprocessing
+        # Add self.classes_ attribute for compatibility with sklearn #
         y_ = np.where(y <= 0, -1, 1)
+        self.classes_ = np.unique(y_)
 
-        # init weights
+        # init weights and bias
         self.weights = np.zeros(n_features)
         self.bias = 0
 
-        for _ in range(self.max_iters):
+        for i in range(self.max_iters):
             loss_weight, loss_bias = self.compute_gradient_svm(X, y_)
-            self.weights -= self.learning_rate * (
-                loss_weight + self.lambda_param * self.weights
+
+            self.weights += self.learning_rate * (
+                loss_weight - self.lambda_param * self.weights
             )
+
             self.bias -= self.learning_rate * loss_bias
+
+            if np.linalg.norm(loss_weight_dif - loss_weight) < self.tol:
+                break
+
+            loss_weight_dif = loss_weight
+
+        # return self for compatibility with sklearn #
+        return self
 
     def predict(self, X):
         """Predict labels.
@@ -81,4 +90,6 @@ class SVM:
         Returns:
             array: predicted labels
         """
-        return np.sign(np.dot(X, self.weights) + self.bias)
+        prediction = np.dot(X, self.weights) + self.bias
+        prediction = np.where(prediction <= 0, 1, 0)
+        return prediction
