@@ -1,4 +1,5 @@
 from algorithms.svm import SVM
+from algorithms.knn import KNN
 from sklearn.model_selection import train_test_split, GridSearchCV, RandomizedSearchCV
 from sklearn.metrics import accuracy_score
 from utils.loaddataset import (
@@ -7,7 +8,7 @@ from utils.loaddataset import (
     load_synthetic_circles_dataset,
     load_synthetic_classification_dataset,
 )
-from utils.Hyperparameter_grids import param_grid_linear_svm
+from utils.Hyperparameter_grids import param_grid_linear_svm, param_grid_KNN
 
 import argparse
 
@@ -49,6 +50,9 @@ def main():
     if args.model == "SVM":
         hyperparameters_grid = param_grid_linear_svm
         model = SVM()
+    elif args.model == "KNN":
+        hyperparameters_grid = param_grid_KNN
+        model = KNN()
     else:
         raise ValueError("Invalid model name.")
 

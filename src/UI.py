@@ -9,6 +9,7 @@ from utils.loaddataset import (
 )
 from sklearn.model_selection import train_test_split
 from algorithms.svm import SVM
+from algorithms.knn import KNN, euclidean_distance, manhattan_distance, cosine_distance
 import plotly.express as px
 
 
@@ -27,13 +28,14 @@ def main():
     )
 
     # Add radio options for the following parameters: model, search, dataset
-    model_options = ["SVM"]
+    model_options = ["SVM", "KNN"]
     dataset_options = [
         "synthetic_blobs",
         "synthetic_moons",
         "synthetic_circles",
         "synthetic_classification",
     ]
+    distance_options = ["euclidean", "manhattan", "cosine"]
 
     with main_tab:
         st.header("Input")
@@ -68,7 +70,13 @@ def main():
             clf = SVM(
                 learning_rate=lr, max_iters=max_iter, tol=tol, lambda_param=lambda_param
             )
-
+        elif model == "KNN":
+            st.header("KNN Hyperparameters")
+            k = st.slider("k", 1, 20, 5)
+            distance_function = st.selectbox(
+                "Select distance function", distance_options
+            )
+            clf = KNN(k=k, metric=distance_function)
         test_size = st.slider("test_size", min_value=0.1, max_value=0.9, value=0.2)
         random_state = st.slider("random_state", min_value=1, max_value=100, value=42)
 
@@ -115,14 +123,15 @@ def main():
             y_pred = clf.predict(X_test)
             st.write("Accuracy:", clf.score(X_test, y_test))
 
-            # plot in fig the line that separates the two classes
-            w = clf.weights
-            b = clf.bias
-            x = np.linspace(-10, 10, 10000)
-            y = -w[0] / w[1] * x - b / w[1]
-            fig.add_scatter(x=x, y=y, mode="lines")
-            fig.update_layout(showlegend=False)
-            st.plotly_chart(fig)
+            if model == "SVM":
+                # plot in fig the line that separates the two classes
+                w = clf.weights
+                b = clf.bias
+                x = np.linspace(-10, 10, 10000)
+                y = -w[0] / w[1] * x - b / w[1]
+                fig.add_scatter(x=x, y=y, mode="lines")
+                fig.update_layout(showlegend=False)
+                st.plotly_chart(fig)
 
     with models_tab:
         st.markdown(
