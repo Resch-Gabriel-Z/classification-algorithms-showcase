@@ -9,11 +9,7 @@ param_grid_linear_svm = {
 param_grid_KNN = {"n_neighbors": [1, 3, 5, 7, 9]}
 
 param_grid_decision_tree = {
-    "criterion": ["gini", "entropy"],
-    "splitter": ["best", "random"],
-    "max_depth": [1, 2, 3, 4, 5],
-    "min_samples_split": [2, 3, 4, 5],
-    "min_samples_leaf": [1, 2, 3, 4, 5],
+    "max_depth": [1, 2, 3, 4, 5, 6, 7, 8],
 }
 
 param_grid_random_forest = {
