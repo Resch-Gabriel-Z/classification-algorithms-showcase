@@ -15,6 +15,8 @@ import plotly.express as px
 import plotly.graph_objects as go
 from utils.streamlitutils import print_tree
 
+st.set_page_config(layout="wide")
+
 
 def main():
     # open external css file and load it into streamlit (the css file is in the same folder as this script)
@@ -33,10 +35,10 @@ def main():
     # Add radio options for the following parameters: model, search, dataset
     model_options = ["SVM", "KNN", "DecisionTree"]
     dataset_options = [
-        "synthetic_blobs",
-        "synthetic_moons",
-        "synthetic_circles",
-        "synthetic_classification",
+        "synthetic blobs",
+        "synthetic moons",
+        "synthetic circles",
+        "synthetic classification",
     ]
     distance_options = ["euclidean", "manhattan", "cosine"]
 
@@ -48,7 +50,7 @@ def main():
         """,
         unsafe_allow_html=True,
     )
-    st.sidebar.header("Input")
+    st.sidebar.header("Dataset and Model")
 
     dataset = st.sidebar.selectbox("Select dataset", dataset_options)
 
@@ -59,15 +61,17 @@ def main():
         lr = st.sidebar.number_input(
             "Learning rate",
             min_value=0.0001,
-            max_value=1.0,
+            max_value=10.0,
             value=0.001,
             format="%f",
         )
-        tol = st.sidebar.number_input("Tolerance", format="%f")
+        tol = st.sidebar.number_input(
+            "Tolerance", format="%f", min_value=0.0, max_value=10.0, value=0.01
+        )
         lambda_param = st.sidebar.number_input(
             "Lambda parameter",
             min_value=0.0001,
-            max_value=1.0,
+            max_value=10.0,
             value=0.001,
             format="%f",
         )
@@ -88,22 +92,23 @@ def main():
         test_size = st.slider("test size", min_value=0.1, max_value=0.9, value=0.2)
         random_state = st.slider("random state", min_value=1, max_value=100, value=42)
 
-        if dataset == "synthetic_blobs":
+        plotly_container = st.container()
+        if dataset == "synthetic blobs":
             X_train, X_test, y_train, y_test = load_synthetic_blobs_dataset(
                 test_size=test_size, random_state=random_state
             )
             fig = px.scatter(x=X_train[:, 0], y=X_train[:, 1], color=y_train)
-        elif dataset == "synthetic_moons":
+        elif dataset == "synthetic moons":
             X_train, X_test, y_train, y_test = load_synthetic_moons_dataset(
                 test_size=test_size, random_state=random_state
             )
             fig = px.scatter(x=X_train[:, 0], y=X_train[:, 1], color=y_train)
-        elif dataset == "synthetic_circles":
+        elif dataset == "synthetic circles":
             X_train, X_test, y_train, y_test = load_synthetic_circles_dataset(
                 test_size=test_size, random_state=random_state
             )
             fig = px.scatter(x=X_train[:, 0], y=X_train[:, 1], color=y_train)
-        elif dataset == "synthetic_classification":
+        elif dataset == "synthetic classification":
             (
                 X_train,
                 X_test,
@@ -116,71 +121,72 @@ def main():
         else:
             raise ValueError("Invalid dataset name.")
 
-        st.header("Dataset visualized")
-        st.plotly_chart(fig)
-        placeholder = st.empty()
-        with placeholder.form(key="my_form"):
-            run_script_button = st.form_submit_button(label="Run script")
-            if run_script_button:
-                clf.fit(X_train, y_train)
-                y_pred = clf.score(X_test, y_test)
-                y_pred = round(y_pred, 2) * 100
-                st.markdown(
-                    f"""
-                            <div class="results">
-                            <p>Accuracy: {y_pred}%</p>
-                            </div>
-                            """,
-                    unsafe_allow_html=True,
-                )
-                if model == "SVM":
-                    # plot in fig the line that separates the two classes
-                    w = clf.weights
-                    b = clf.bias
-                    x = np.linspace(-10, 10, 10000)
-                    y = -w[0] / w[1] * x - b / w[1]
-                    fig.add_scatter(x=x, y=y, mode="lines")
-                    fig.update_layout(showlegend=False)
-                    st.plotly_chart(fig)
-
-                elif model == "DecisionTree":
-                    tree_strings = print_tree(clf.tree, spacing="\n")
-                    for t_string in tree_strings:
-                        st.markdown(t_string)
-
-                elif model == "KNN":
-                    # plot contour plot
-                    x_min, x_max = X_train[:, 0].min() - 1, X_train[:, 0].max() + 1
-                    y_min, y_max = X_train[:, 1].min() - 1, X_train[:, 1].max() + 1
-                    xx, yy = np.meshgrid(
-                        np.arange(x_min, x_max, 0.1), np.arange(y_min, y_max, 0.1)
+        with plotly_container:
+            st.header("Dataset visualized")
+            st.plotly_chart(fig)
+            placeholder = st.empty()
+            with placeholder.form(key="my_form"):
+                run_script_button = st.form_submit_button(label="Run script")
+                if run_script_button:
+                    clf.fit(X_train, y_train)
+                    y_pred = clf.score(X_test, y_test)
+                    y_pred = round(y_pred, 2) * 100
+                    st.markdown(
+                        f"""
+                                <div class="results">
+                                <p>Accuracy: {y_pred}%</p>
+                                </div>
+                                """,
+                        unsafe_allow_html=True,
                     )
-                    Z = clf.predict(np.c_[xx.ravel(), yy.ravel()])
-                    Z = Z.reshape(xx.shape)
+                    if model == "SVM":
+                        # plot in fig the line that separates the two classes
+                        w = clf.weights
+                        b = clf.bias
+                        x = np.linspace(-10, 10, 10000)
+                        y = -w[0] / w[1] * x - b / w[1]
+                        fig.add_scatter(x=x, y=y, mode="lines")
+                        fig.update_layout(showlegend=False)
+                        st.plotly_chart(fig)
 
-                    fig = go.Figure(
-                        data=go.Contour(
-                            z=Z,
-                            x=np.arange(x_min, x_max, 0.1),
-                            y=np.arange(y_min, y_max, 0.1),
-                            colorscale="Viridis",
-                            opacity=0.5,
+                    elif model == "DecisionTree":
+                        tree_strings = print_tree(clf.tree, spacing="\n")
+                        for t_string in tree_strings:
+                            st.markdown(t_string)
+
+                    elif model == "KNN":
+                        # plot contour plot
+                        x_min, x_max = X_train[:, 0].min() - 1, X_train[:, 0].max() + 1
+                        y_min, y_max = X_train[:, 1].min() - 1, X_train[:, 1].max() + 1
+                        xx, yy = np.meshgrid(
+                            np.arange(x_min, x_max, 0.1), np.arange(y_min, y_max, 0.1)
                         )
-                    )
-                    fig.add_scatter(
-                        x=X_train[:, 0],
-                        y=X_train[:, 1],
-                        mode="markers",
-                        marker=dict(color=y_train),
-                    )
-                    st.plotly_chart(fig)
+                        Z = clf.predict(np.c_[xx.ravel(), yy.ravel()])
+                        Z = Z.reshape(xx.shape)
+
+                        fig = go.Figure(
+                            data=go.Contour(
+                                z=Z,
+                                x=np.arange(x_min, x_max, 0.1),
+                                y=np.arange(y_min, y_max, 0.1),
+                                colorscale="Viridis",
+                                opacity=0.5,
+                            )
+                        )
+                        fig.add_scatter(
+                            x=X_train[:, 0],
+                            y=X_train[:, 1],
+                            mode="markers",
+                            marker=dict(color=y_train),
+                        )
+                        st.plotly_chart(fig)
 
     with models_tab:
         st.markdown(
             """
                     <div class="models_tab">
                     <h1>Models</h1>
-                    <p>look at those models poggers
+                    <p>In ML, a model is a mathematical representation of a real-world process. It's a program that improves its performance at a task through experience. In supervised learning, a model learns from labeled training data to predict outcomes for unseen data.</p>
                     </div>
                     """,
             unsafe_allow_html=True,
@@ -216,7 +222,7 @@ def main():
             """
                     <div class="datasets_tab">
                     <h1>Datasets</h1>
-                    <p>look at those datasets poggers
+                    <p>A dataset is a collection of data points that share a common theme. Each data point represents a single instance of data, such as an observation or an event. Datasets are used to train and evaluate machine learning models. They are also used to test the performance of algorithms in a controlled environment.</p>
                     </div>
                     """,
             unsafe_allow_html=True,
