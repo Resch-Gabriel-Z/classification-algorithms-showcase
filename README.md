@@ -53,4 +53,9 @@ Follow these steps to set up the project on your local machine.
     pip install -r requirements.txt
     ```
 
+## View interactive Website
+The Website has the benefit to visualize the algorithms in a better way. to run it simply navigate to the src folder an run:
 
+```python
+python viewDemo.py
+```
