@@ -141,7 +141,14 @@ with main_tab:
                     w = clf.weights
                     b = clf.bias
                     x = np.linspace(-10, 10, 10000)
-                    y = -w[0] / w[1] * x - b / w[1]
+                    if w[1] == 0 and w[0] == 0:
+                        st.markdown(
+                            f"""The line is not defined, due to $w[1]$ and $w[0]$ being 0 :( \n
+                                    Try again with different hyperparameters. The line plotted is simply going from edge to edge"""
+                        )
+                        y = np.linspace(-10, 10, 10000)
+                    else:
+                        y = -w[0] / w[1] * x - b / w[1]
                     fig.add_scatter(x=x, y=y, mode="lines")
                     fig.update_layout(showlegend=False)
                     st.plotly_chart(fig)
