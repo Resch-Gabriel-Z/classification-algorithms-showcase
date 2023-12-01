@@ -39,10 +39,12 @@ class DecisionTree(BaseEstimator, ClassifierMixin):
 
         # Create variable to store the count of each class
         class_counts = np.bincount(y)
-        
-        # if there is no class, return a leaf node with value None
-        if unique_classes == 0:
-            return DecisionNode(value=None)
+
+        # if the Data is empty then return None
+        # because we cannot split the data if there is no data
+        # that is okay, because in the parent node, the other child will have data.
+        if len(class_counts) == 0:
+            return None
 
         # Get the index of the class with the highest count
         # we calculate it no matter what, because even if we only have one class,
@@ -203,12 +205,17 @@ class DecisionTree(BaseEstimator, ClassifierMixin):
         Returns:
             node value: predicted class, in form of the value of the node.
         """
-        # Predict the class of a sample recursively
 
         # If the node is a leaf node, return the value of the node
         # the node.value of course contains the class that the node predicts
         if node.value is not None:
             return node.value
+
+        # If the node only has one child, go to that child
+        if node.left is None and node.right is not None:
+            return self._predict_tree(x, node.right)
+        if node.right is None and node.left is not None:
+            return self._predict_tree(x, node.left)
 
         # If the feature value of the sample is less than or equal to the threshold, go to the left subtree, otherwise go to the right subtree
         # Basically it goes like this, the x asks the tree if arrived at a leaf node,
