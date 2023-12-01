@@ -14,8 +14,6 @@ param_grid_decision_tree = {
 
 param_grid_random_forest = {
     "n_estimators": [100, 200, 300],
-    "criterion": ["gini", "entropy"],
     "max_depth": [1, 2, 3, 4, 5],
-    "min_samples_split": [2, 3, 4, 5],
-    "min_samples_leaf": [1, 2, 3, 4, 5],
+    "max_features": [1, 2, 3, 4, 5],
 }

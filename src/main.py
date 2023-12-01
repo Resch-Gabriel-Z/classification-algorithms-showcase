@@ -1,6 +1,7 @@
 from algorithms.svm import SVM
 from algorithms.knn import KNN
 from algorithms.decisiontree import DecisionTree
+from algorithms.randomforest import Randomforest
 from sklearn.model_selection import train_test_split, GridSearchCV, RandomizedSearchCV
 from sklearn.metrics import accuracy_score
 from utils.loaddataset import (
@@ -13,6 +14,7 @@ from utils.Hyperparameter_grids import (
     param_grid_linear_svm,
     param_grid_KNN,
     param_grid_decision_tree,
+    param_grid_random_forest,
 )
 
 import argparse
@@ -61,6 +63,9 @@ def main():
     elif args.model == "DecisionTree":
         hyperparameters_grid = param_grid_decision_tree
         model = DecisionTree()
+    elif args.model == "Randomforest":
+        hyperparameters_grid = param_grid_random_forest
+        model = Randomforest()
     else:
         raise ValueError("Invalid model name.")
 

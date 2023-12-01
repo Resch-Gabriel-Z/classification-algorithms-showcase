@@ -1,16 +1,15 @@
 import streamlit as st
 import numpy as np
-import pandas as pd
 from utils.loaddataset import (
     load_synthetic_blobs_dataset,
     load_synthetic_moons_dataset,
     load_synthetic_circles_dataset,
     load_synthetic_classification_dataset,
 )
-from sklearn.model_selection import train_test_split
 from algorithms.svm import SVM
-from algorithms.knn import KNN, euclidean_distance, manhattan_distance, cosine_distance
+from algorithms.knn import KNN
 from algorithms.decisiontree import DecisionTree
+from algorithms.randomforest import Randomforest
 import plotly.express as px
 import plotly.graph_objects as go
 from utils.streamlitutils import print_tree
@@ -32,7 +31,7 @@ main_tab, models_tab, datasets_tab, About_us_tab = st.tabs(
 )
 
 # Add radio options for the following parameters: model, search, dataset
-model_options = ["SVM", "KNN", "DecisionTree"]
+model_options = ["SVM", "KNN", "DecisionTree", "RandomForest"]
 dataset_options = [
     "synthetic blobs",
     "synthetic moons",
@@ -85,6 +84,13 @@ elif model == "KNN":
 elif model == "DecisionTree":
     max_depth = st.sidebar.slider("max_depth", 1, 20, 5)
     clf = DecisionTree(max_depth=max_depth)
+elif model == "RandomForest":
+    n_estimators = st.sidebar.slider("n_estimators", 1, 20, 5)
+    max_depth = st.sidebar.slider("max_depth", 1, 20, 5)
+    max_features = st.sidebar.slider("max_features", 1, 20, 5)
+    clf = Randomforest(
+        n_estimators=n_estimators, max_depth=max_depth, max_features=max_features
+    )
 with main_tab:
     test_size = st.slider("test size", min_value=0.1, max_value=0.9, value=0.2)
     random_state = st.slider("random state", min_value=1, max_value=100, value=42)
@@ -159,6 +165,36 @@ with main_tab:
                         st.markdown(t_string)
 
                 elif model == "KNN":
+                    # plot contour plot
+                    x_min, x_max = X_train[:, 0].min() - 1, X_train[:, 0].max() + 1
+                    y_min, y_max = X_train[:, 1].min() - 1, X_train[:, 1].max() + 1
+                    xx, yy = np.meshgrid(
+                        np.arange(x_min, x_max, 0.1), np.arange(y_min, y_max, 0.1)
+                    )
+                    Z = clf.predict(np.c_[xx.ravel(), yy.ravel()])
+                    Z = Z.reshape(xx.shape)
+
+                    fig = go.Figure(
+                        data=go.Contour(
+                            z=Z,
+                            x=np.arange(x_min, x_max, 0.1),
+                            y=np.arange(y_min, y_max, 0.1),
+                            colorscale="Viridis",
+                            opacity=0.5,
+                        )
+                    )
+                    fig.add_scatter(
+                        x=X_train[:, 0],
+                        y=X_train[:, 1],
+                        mode="markers",
+                        marker=dict(color=y_train),
+                    )
+                    st.plotly_chart(fig)
+                
+                elif model == "RandomForest":
+                    # dont plot the tree like in decision tree, but plot the contour plot
+                    # mainly because showing all the trees in the forest would be too much.
+                    # but I don't want to leave this section empty, so I'll just plot the contour plot
                     # plot contour plot
                     x_min, x_max = X_train[:, 0].min() - 1, X_train[:, 0].max() + 1
                     y_min, y_max = X_train[:, 1].min() - 1, X_train[:, 1].max() + 1
