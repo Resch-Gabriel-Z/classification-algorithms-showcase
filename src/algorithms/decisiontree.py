@@ -39,6 +39,10 @@ class DecisionTree(BaseEstimator, ClassifierMixin):
 
         # Create variable to store the count of each class
         class_counts = np.bincount(y)
+        
+        # if there is no class, return a leaf node with value None
+        if unique_classes == 0:
+            return DecisionNode(value=None)
 
         # Get the index of the class with the highest count
         # we calculate it no matter what, because even if we only have one class,
